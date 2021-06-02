@@ -1,0 +1,100 @@
+﻿
+<hr />
+<div class="justify-content-center align-items-center d-flex" id="contentOrder">
+    <div class="container-fluid" style="max-width:800px;">
+
+        <div class="row">
+            <div class="col-md-2 font-weight-bold">
+                @Html.Label("Reserva:")
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="numeroReserva" size="20">
+            </div>
+            <div class="col-md-3">
+                <input value="Buscar" type="button" class="btn btn-primary" id="buscarReserva" />
+            </div>
+            <div class="col-md-3">
+                @Html.ActionLink("Volver", "VuelosDisponibles", "VuelosDisponibles", "VuelosDisponibles", new { @class = "btn btn-primary" })
+            </div>
+        </div>
+        <div id="divEditarContacto"></div>
+        <div class="modal-body" id="modal-body1"></div>
+    </div>
+</div>
+
+
+<script>
+    $("#buscarReserva").click(function () {
+        if ($("#numeroReserva").val() === "") {
+            $("#modal-body1").html("<div class='alert alert-danger'><span class='glyphicon glyphicon-remove' style='font-size:10px'></span>"
+                + "<strong> Digite el número de la reserva.</strong></div>");
+            $("#MensajeModal").modal({ backdrop: true });
+            return;
+        }
+        else {
+            $("#modal-body1").html("");
+        }
+
+        //Cargar la información en una vista parcial:
+        LoadDataDiv("divEditarContacto", "post", {
+            numeroReserva: $("#numeroReserva").val()
+        }, "_ParcialEditarContacto", "EdicionContactos");
+    });
+
+    function LoadDataDiv(idDiv, metodoGetPost, data, nombreAccion, controlador) {
+        var retorno = "ok";
+
+        var url = "/" + controlador + "/" + nombreAccion;
+        if (metodoGetPost == "get") {
+            $.get(url, data, function (response, status) {
+                if (status == "success") {
+                    var Arreglo = response.split('|');
+                    if (Arreglo[0].toString() == "error") {
+                        retorno = "error";
+                        $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                            + "<strong> Error,</strong></span> " + Arreglo[1].toString() + "</h4></div>");
+                        $("#MensajeModal").modal({ backdrop: true });
+                    } else {
+                        idDiv = "#" + idDiv;
+                        $(idDiv).html("");
+                        $(idDiv).html(response);
+                    }
+                }
+                else {
+                    retorno = "error";
+                    $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                        + "<strong> Error,</strong></span> No se recibió respuesta del servidor</h4></div>");
+                    $("#MensajeModal").modal({ backdrop: true });
+                }
+            });
+        }
+        if (metodoGetPost == "post") {
+            $.post(url, data, function (response, status) {
+                if (status == "success") {
+                    var Arreglo = response.split('|');
+                    if (Arreglo[0].toString() == "error") {
+                        retorno = "error";
+                        $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                            + "<strong> Error,</strong></span> " + Arreglo[1].toString() + "</h4></div>");
+                        $("#MensajeModal").modal({ backdrop: true });
+
+                    } else {
+                        //Se limpia el div al cual se le va a cargar la data
+                        idDiv = "#" + idDiv;
+                        $(idDiv).html("");
+                        $(idDiv).html(response);
+                    }
+                }
+                else {
+                    retorno = "error";
+                    $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                        + "<strong> Error,</strong></span> No se recibió respuesta del servidor</h4></div>");
+                    $("#MensajeModal").modal({ backdrop: true });
+                }
+            });
+        }
+        return retorno;
+    }
+</script>
+
+

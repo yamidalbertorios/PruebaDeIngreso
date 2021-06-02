@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="PruebaIngresoModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Ciudades">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Codigo" Type="nvarchar(max)" />
+          <Property Name="Nombre" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Contacto">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nombreContacto" Type="nvarchar" MaxLength="50" />
+          <Property Name="cedulaContacto" Type="nvarchar" MaxLength="50" />
+          <Property Name="telefonoContacto" Type="nvarchar" MaxLength="50" />
+          <Property Name="emailContacto" Type="nvarchar" MaxLength="50" />
+          <Property Name="IdReserva" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Flight">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepartureStation" Type="nvarchar(max)" />
+          <Property Name="ArrivalStation" Type="nvarchar(max)" />
+          <Property Name="DepartureDate" Type="datetime" Nullable="false" />
+          <Property Name="Transport" Type="int" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Currency" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Pasajero">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nombrePasajero" Type="nvarchar" MaxLength="50" />
+          <Property Name="IdReserva" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Reserva">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IdVuelo" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Contacto__IdRese__1A14E395">
+          <End Role="Reserva" Type="Self.Reserva" Multiplicity="1" />
+          <End Role="Contacto" Type="Self.Contacto" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reserva">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Contacto">
+              <PropertyRef Name="IdReserva" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Pasajero__IdRese__1B0907CE">
+          <End Role="Reserva" Type="Self.Reserva" Multiplicity="1" />
+          <End Role="Pasajero" Type="Self.Pasajero" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reserva">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Pasajero">
+              <PropertyRef Name="IdReserva" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reserva__IdVuelo__173876EA">
+          <End Role="Flight" Type="Self.Flight" Multiplicity="1" />
+          <End Role="Reserva" Type="Self.Reserva" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flight">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Reserva">
+              <PropertyRef Name="IdVuelo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PruebaIngresoModelStoreContainer">
+          <EntitySet Name="Ciudades" EntityType="Self.Ciudades" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Contacto" EntityType="Self.Contacto" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Flight" EntityType="Self.Flight" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Pasajero" EntityType="Self.Pasajero" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Reserva" EntityType="Self.Reserva" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Contacto__IdRese__1A14E395" Association="Self.FK__Contacto__IdRese__1A14E395">
+            <End Role="Reserva" EntitySet="Reserva" />
+            <End Role="Contacto" EntitySet="Contacto" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Pasajero__IdRese__1B0907CE" Association="Self.FK__Pasajero__IdRese__1B0907CE">
+            <End Role="Reserva" EntitySet="Reserva" />
+            <End Role="Pasajero" EntitySet="Pasajero" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reserva__IdVuelo__173876EA" Association="Self.FK__Reserva__IdVuelo__173876EA">
+            <End Role="Flight" EntitySet="Flight" />
+            <End Role="Reserva" EntitySet="Reserva" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="PruebaIngresoModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="PruebaIngresoEntities" annotation:LazyLoadingEnabled="true" >
+          <EntitySet Name="Ciudades" EntityType="PruebaIngresoModel.Ciudades" />
+          <EntitySet Name="Flight" EntityType="PruebaIngresoModel.Flight" />
+          <EntitySet Name="Contacto" EntityType="PruebaIngresoModel.Contacto" />
+          <EntitySet Name="Pasajero" EntityType="PruebaIngresoModel.Pasajero" />
+          <EntitySet Name="Reserva" EntityType="PruebaIngresoModel.Reserva" />
+          <AssociationSet Name="FK__Contacto__IdRese__1A14E395" Association="PruebaIngresoModel.FK__Contacto__IdRese__1A14E395">
+            <End Role="Reserva" EntitySet="Reserva" />
+            <End Role="Contacto" EntitySet="Contacto" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Reserva__IdVuelo__173876EA" Association="PruebaIngresoModel.FK__Reserva__IdVuelo__173876EA">
+            <End Role="Flight" EntitySet="Flight" />
+            <End Role="Reserva" EntitySet="Reserva" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Pasajero__IdRese__1B0907CE" Association="PruebaIngresoModel.FK__Pasajero__IdRese__1B0907CE">
+            <End Role="Reserva" EntitySet="Reserva" />
+            <End Role="Pasajero" EntitySet="Pasajero" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Ciudades">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Codigo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Nombre" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Flight">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepartureStation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ArrivalStation" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DepartureDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Transport" Type="Int32" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Currency" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Reserva" Relationship="PruebaIngresoModel.FK__Reserva__IdVuelo__173876EA" FromRole="Flight" ToRole="Reserva" />
+        </EntityType>
+        <EntityType Name="Contacto">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nombreContacto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="cedulaContacto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="telefonoContacto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="emailContacto" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IdReserva" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Reserva" Relationship="PruebaIngresoModel.FK__Contacto__IdRese__1A14E395" FromRole="Contacto" ToRole="Reserva" />
+        </EntityType>
+        <EntityType Name="Pasajero">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nombrePasajero" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IdReserva" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Reserva" Relationship="PruebaIngresoModel.FK__Pasajero__IdRese__1B0907CE" FromRole="Pasajero" ToRole="Reserva" />
+        </EntityType>
+        <EntityType Name="Reserva">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IdVuelo" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Contacto" Relationship="PruebaIngresoModel.FK__Contacto__IdRese__1A14E395" FromRole="Reserva" ToRole="Contacto" />
+          <NavigationProperty Name="Flight" Relationship="PruebaIngresoModel.FK__Reserva__IdVuelo__173876EA" FromRole="Reserva" ToRole="Flight" />
+          <NavigationProperty Name="Pasajero" Relationship="PruebaIngresoModel.FK__Pasajero__IdRese__1B0907CE" FromRole="Reserva" ToRole="Pasajero" />
+        </EntityType>
+        <Association Name="FK__Contacto__IdRese__1A14E395">
+          <End Type="PruebaIngresoModel.Reserva" Role="Reserva" Multiplicity="1" />
+          <End Type="PruebaIngresoModel.Contacto" Role="Contacto" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reserva">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Contacto">
+              <PropertyRef Name="IdReserva" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Reserva__IdVuelo__173876EA">
+          <End Type="PruebaIngresoModel.Flight" Role="Flight" Multiplicity="1" />
+          <End Type="PruebaIngresoModel.Reserva" Role="Reserva" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flight">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Reserva">
+              <PropertyRef Name="IdVuelo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Pasajero__IdRese__1B0907CE">
+          <End Type="PruebaIngresoModel.Reserva" Role="Reserva" Multiplicity="1" />
+          <End Type="PruebaIngresoModel.Pasajero" Role="Pasajero" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Reserva">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Pasajero">
+              <PropertyRef Name="IdReserva" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="PruebaIngresoModelStoreContainer" CdmEntityContainer="PruebaIngresoEntities" >
+          <EntitySetMapping Name="Ciudades">
+            <EntityTypeMapping TypeName="PruebaIngresoModel.Ciudades">
+              <MappingFragment StoreEntitySet="Ciudades">
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Codigo" ColumnName="Codigo" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Flight">
+            <EntityTypeMapping TypeName="PruebaIngresoModel.Flight">
+              <MappingFragment StoreEntitySet="Flight">
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Transport" ColumnName="Transport" />
+                <ScalarProperty Name="DepartureDate" ColumnName="DepartureDate" />
+                <ScalarProperty Name="ArrivalStation" ColumnName="ArrivalStation" />
+                <ScalarProperty Name="DepartureStation" ColumnName="DepartureStation" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Contacto">
+            <EntityTypeMapping TypeName="PruebaIngresoModel.Contacto">
+              <MappingFragment StoreEntitySet="Contacto">
+                <ScalarProperty Name="IdReserva" ColumnName="IdReserva" />
+                <ScalarProperty Name="emailContacto" ColumnName="emailContacto" />
+                <ScalarProperty Name="telefonoContacto" ColumnName="telefonoContacto" />
+                <ScalarProperty Name="cedulaContacto" ColumnName="cedulaContacto" />
+                <ScalarProperty Name="nombreContacto" ColumnName="nombreContacto" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Pasajero">
+            <EntityTypeMapping TypeName="PruebaIngresoModel.Pasajero">
+              <MappingFragment StoreEntitySet="Pasajero">
+                <ScalarProperty Name="IdReserva" ColumnName="IdReserva" />
+                <ScalarProperty Name="nombrePasajero" ColumnName="nombrePasajero" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Reserva">
+            <EntityTypeMapping TypeName="PruebaIngresoModel.Reserva">
+              <MappingFragment StoreEntitySet="Reserva">
+                <ScalarProperty Name="IdVuelo" ColumnName="IdVuelo" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="54fe2924db5749639c7a8dcb57ba65b3" Name="Diagram1" >
+        <EntityTypeShape EntityType="PruebaIngresoModel.Ciudades" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="PruebaIngresoModel.Flight" Width="1.5" PointX="3.375" PointY="0.75" />
+        <EntityTypeShape EntityType="PruebaIngresoModel.Contacto" Width="1.5" PointX="7.875" PointY="7.25" />
+        <EntityTypeShape EntityType="PruebaIngresoModel.Pasajero" Width="1.5" PointX="7.875" PointY="4.75" />
+        <EntityTypeShape EntityType="PruebaIngresoModel.Reserva" Width="1.5" PointX="5.625" PointY="6.25" />
+        <AssociationConnector Association="PruebaIngresoModel.FK__Contacto__IdRese__1A14E395" />
+        <AssociationConnector Association="PruebaIngresoModel.FK__Reserva__IdVuelo__173876EA" />
+        <AssociationConnector Association="PruebaIngresoModel.FK__Pasajero__IdRese__1B0907CE" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,302 @@
+﻿@model Entidades.GenericModel
+
+@{ Layout = null;}
+
+@{
+    if (Model.listRespuestaAPI == null)
+    {
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>No se encontraron resultados para los parámetros de búsqueda.</strong>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info alert-dismissible">
+            <strong>Disponibilidades de Vuelos</strong>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <tr>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Origen</font></th>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Destino</font></th>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Fecha</font></th>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Vuelo</font></th>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Precio</font></th>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Moneda</font></th>
+                    <th style="background-color:rgb(203, 203, 203)"><font color="##000000">Acciones</font></th>
+
+                </tr>
+                @foreach (var item in Model.listRespuestaAPI)
+                {
+                    <tr class="vuelosRow" style="cursor:pointer">
+                        <td>@item.DepartureStation</td>
+                        <td>@item.ArrivalStation</td>
+                        <td>@item.DepartureDate</td>
+                        <td>@item.FlightNumber</td>
+                        <td>@item.Price</td>
+                        <td>@item.Currency</td>
+                        <td>
+                            @Ajax.ActionLink("Continuar", "GuardarResultado", "VuelosDisponibles",
+                       new
+                            {
+                           DepartureStation = @item.DepartureStation,
+                           ArrivalStation = @item.ArrivalStation,
+                           DepartureDate = @item.DepartureDate,
+                           FlightNumber = @item.FlightNumber,
+                           Price = @item.Price,
+                           Currency = @item.Currency
+                       },
+                       new AjaxOptions { HttpMethod = "POST", OnComplete = "itemGuardado" })
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <hr />
+        <div class="alert alert-info alert-dismissible">
+            <strong>Actual Vuelo Seleccionado:</strong>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <strong>Fecha de Ida:</strong>
+            </div>
+            <div class="col-md-3">
+                <input type="text" id="fechaIda" name="name" readonly size="20">
+            </div>
+            <div class="col-md-2">
+                <strong>Vuelo:</strong>
+</div>
+            <div class="col-md-2">
+                <input type="text" id="numeroVuelo" name="name" readonly size="10">
+            </div>
+            <div class="col-md-1">
+                <strong>Precio:</strong>
+</div>
+            <div class="col-md-2">
+                <input type="text" id="precio" name="name" readonly size="10">
+            </div>
+        </div>
+
+        <hr />
+        <div class="alert alert-info alert-dismissible">
+            <strong>Ingresar Datos de Contacto y Pasajeros</strong>
+        </div>
+        <div class="row">
+            <div class="col-md-3 font-weight-bold">
+                @Html.Label("Nombre del contacto:")
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.nombreContacto)
+            </div>
+            <div class="col-md-3 font-weight-bold">
+                @Html.Label("Cédula del contacto:")
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.cedulaContacto)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 font-weight-bold">
+                @Html.Label("Télefono del contacto:")
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.telefonoContacto)
+            </div>
+            <div class="col-md-3 font-weight-bold">
+                @Html.Label("Email del contacto:")
+            </div>
+            <div class="col-md-3">
+                @Html.EditorFor(model => model.emailContacto)
+            </div>
+        </div>
+
+        <hr />
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Nombre del Pasajero:</strong> 
+            </div>
+            <div class="col-md-5">
+                @Html.EditorFor(model => model.nombrePasajero, new { cols = "80", @class = "form-control" })
+            </div>
+            <div class="col-md-2">
+                <input value="Agregar Pasajero" type="button" class="btn btn-primary" onclick="agregarPasajero();" />
+            </div>
+            <div class="col-md-2">
+            </div>
+        </div>
+
+        <hr />
+        <div id="divConceptos" class="form-group">
+            <table id="tablaConceptos" class="table table-bordered">
+                <tr>
+                    <th>Pasajeros Agregados al Vuelo:</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="btn btn-success" onclick="guardarContacto()">
+                    <span class="glyphicon glyphicon-user"></span> Guardar Contacto
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+
+        <div class="modal-body" id="modal-advertencia"></div>
+    }
+}
+
+<script>
+    var origen = "";
+    var destino = "";
+
+    //Obtener la información del registro seleccionado:
+    $(".vuelosRow").click(function () {
+
+        origen = $(this).find('td:eq(0)').html();
+        destino = $(this).find('td:eq(1)').html();
+        $('#fechaIda').val($(this).find('td:eq(2)').html());
+        $('#numeroVuelo').val($(this).find('td:eq(3)').html());
+        $('#precio').val($(this).find('td:eq(4)').html());
+        moneda = $(this).find('td:eq(5)').html();
+    });
+
+    var data = "";
+
+    function guardarContacto() {
+
+        if ($('#fechaIda').val() === "") {
+            $("#modal-advertencia").html("<div class='alert alert-danger alert-dismissible'><button type='button' class='close' data-dismiss='alert'>&times;</button>"
+                + "<strong>Por favor seleccione uno de los vuelos disponibles de la lista.</strong></div>");
+            return;
+        }
+        else {
+            $("#modal-advertencia").html("");
+        }
+
+        if ($('#nombreContacto').val() === "" || $('#cedulaContacto').val() === "" || $('#telefonoContacto').val() === "") {
+            $("#modal-advertencia").html("<div class='alert alert-danger alert-dismissible'><button type='button' class='close' data-dismiss='alert'>&times;</button>"
+                + "<strong>Por favor digite los datos del contacto.</strong></div>");
+            return;
+        }
+        else {
+            $("#modal-advertencia").html("");
+        }
+
+        var precio = parseInt($('#precio').val());
+        dataPasajeros = "";
+
+        filas = $("#tablaConceptos").find("tr");
+        for (i = 1; i < filas.length; i++) {
+            var celdas = $(filas[i]).find("td");
+            if (i + 1 === filas.length) {
+                dataPasajeros = dataPasajeros + $(celdas[0]).text();
+            }
+            else {
+                dataPasajeros = dataPasajeros + $(celdas[0]).text() + "|";
+            }
+        }
+
+        dataContacto = $('#nombreContacto').val() + "|" +
+            $('#cedulaContacto').val() + "|" +
+            $('#telefonoContacto').val() + "|" +
+            $('#emailContacto').val();
+
+        $.ajax({
+            url: '/VuelosDisponibles/guardarInformacionContactoPasajero',
+            type: 'GET',
+            dataType: "json",
+            data: {
+                origen: origen,
+                destino: destino,
+                fechaIda: $('#fechaIda').val(),
+                numeroVuelo: $('#numeroVuelo').val(),
+                precio: precio,
+                moneda: moneda,
+                dataContacto: dataContacto,
+                dataPasajeros: dataPasajeros
+            },
+            error: function (ex) {
+                alert(ex.responseText);
+            },
+            success: function (response) {
+
+                $('#cedulaContacto').val("");
+                $('#telefonoContacto').val("");
+                $('#emailContacto').val("");
+                $("#tablaConceptos").html("");
+                $('#fechaIda').val("");
+                $('#numeroVuelo').val("");
+                $('#precio').val("");
+                $('#nombrePasajero').val("");
+
+                var data = jQuery.parseJSON(response.Results);
+
+                $.each(data, function (key, value) {
+                    $("#modal-advertencia").html("<div class='alert alert-info alert-dismissible'><button type='button' class='close' data-dismiss='alert'>&times;</button>"
+                        + "<strong>Señor(a) " + $('#nombreContacto').val() + ", el número de reserva generado es el " + value.Id + "</strong></div>");
+                });
+                $('#nombreContacto').val("");
+            }
+        });
+    }
+
+    var numItem = 0;
+
+    function agregarPasajero() {
+
+        if ($("#nombrePasajero").val() === "") {
+            $("#modal-advertencia").html("<div class='alert alert-danger'><span class='glyphicon glyphicon-remove' style='font-size:10px'></span>"
+                + "<strong> Por favor digite el nombre del pasajero.</strong></div>");
+            $("#MensajeModal").modal({ backdrop: true });
+            return;
+        }
+        else {
+            $("#modal-advertencia").html("");
+        }
+        var columnas = ["nombrePasajero"];
+        crearTablaDatosAdicionados(columnas, "tablaConceptos", "divConceptos", "conceptos", numItem);
+        numItem++;
+    }
+
+    function crearTablaDatosAdicionados(columnas, tablaId, divConceptoId, conceptoId, num) {
+        let Tabla = document.getElementById(tablaId);
+        let TR = document.createElement("tr");
+
+        let DivConceptos = document.getElementById(divConceptoId);
+        let HiddenIndex = document.createElement("input");
+
+        HiddenIndex.name = "conceptos.Index";
+        HiddenIndex.value = num;
+        HiddenIndex.type = "hidden";
+
+        DivConceptos.appendChild(HiddenIndex);
+
+        for (var i = 0; i < columnas.length; i++) {
+            let campoId = document.getElementById(columnas[i]).value;
+
+            let TD = document.createElement("td");
+            TR.appendChild(TD);
+            TD.innerHTML = campoId;
+            Tabla.appendChild(TR);
+
+            HiddenIndex.name = conceptoId + "[" + num + "]." + columnas[i];
+            HiddenIndex.value = campoId;
+            HiddenIndex.type = "hidden";
+
+            DivConceptos.appendChild(HiddenIndex);
+            
+            document.getElementById(columnas[i]).value = "";
+        }
+    }
+
+</script>
+
+
+
+

@@ -1,0 +1,170 @@
+﻿
+<div class="justify-content-center align-items-center d-flex" id="contentOrder">
+    <div class="container-fluid" style="max-width:800px;">
+        <div class="row" style="        background-color: rgb(203, 203, 203)">
+            <div class="col-10 pl-0">
+                
+            </div>
+            <div class="col-2 pr-1 pt-2">
+                <div class="dropdown dropleft float-right">
+                    <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
+                        <span class="fas fa-bars"></span>
+                    </button>
+                    <div class="dropdown-menu">                        
+                        <h5 class="dropdown-header">Opciones</h5>
+                        <button class="dropdown-item" id="editContacto">Editar Contacto</button>                       
+                    </div>
+                </div>
+            </div>
+        </div> 
+
+        <div class="container pl-0 pr-0 mt-1">
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" style="background-color:rgb(203, 203, 203)">
+                        <a class="card-link font-weight-bold" data-toggle="collapse" href="#collapseOne">Búsqueda de vuelos</a>
+                    </div>
+                    <div id="collapseOne" class="collapse" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2 font-weight-bold">Origen:</div>
+                                <div class="col-md-2">
+                                    <select class="form-control" id="selectCiudadesOrigen">
+                                        @foreach (var item in ViewBag.ListCities)
+                                        {
+                                            if (item.Split('|')[0].Trim() == "0")
+                                            {
+                                                <option value="@item.Split('|')[0].Trim()" selected>@item.Split('|')[1].Trim()</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Split('|')[0].Trim()">@item.Split('|')[1].Trim()</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2 font-weight-bold">Destino:</div>
+                                <div class="col-md-2">
+                                    <select class="form-control" id="selectCiudadesDestino">
+                                        @foreach (var item in ViewBag.ListCities)
+                                        {
+                                            if (item.Split('|')[0].Trim() == "0")
+                                            {
+                                                <option value="@item.Split('|')[0].Trim()" selected>@item.Split('|')[1].Trim()</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Split('|')[0].Trim()">@item.Split('|')[1].Trim()</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-2 font-weight-bold">Fecha:</div>
+                                <div class="col-md-2"><input class="form-control datePartida" type="text" id="fechaInicio" /></div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4"><button class="btn btn-block btn-outline-success" id="buscarVuelos">Buscar vuelos</button></div>
+                                <div class="col-md-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divDisponiblidadesVuelos"></div>
+        <div class="modal-body" id="modal-body1"></div>       
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //Establecer la fecha en un día posterior al actual:
+        var fecha = new Date(Date.now());        
+        fecha.setDate(fecha.getDate() + 1);
+        $(".datePartida").datetimepicker({ format: 'DD/MM/YYYY', minDate: fecha }); 
+    });
+
+    $("#buscarVuelos").click(function () {
+        if ($("#selectCiudadesOrigen").val() === $("#selectCiudadesDestino").val()) {
+            $("#modal-body1").html("<div class='alert alert-danger'><span class='glyphicon glyphicon-remove' style='font-size:10px'></span>"
+                + "<strong> La ciudad origen no puede ser la misma ciudad de destino.</strong></div>");
+            $("#MensajeModal").modal({ backdrop: true });
+            return;
+        }
+        else
+        {
+            $("#modal-body1").html("");
+        }
+
+        //Cargar la información en una vista parcial:
+        LoadDataDiv("divDisponiblidadesVuelos", "post", {
+            codigoOrigen: $("#selectCiudadesOrigen").val(), codigoDestino: $("#selectCiudadesDestino").val(), Desde: $("#fechaInicio").val()
+        }, "_DisponibilidadesDeVuelos", "VuelosDisponibles");
+    });
+
+    function LoadDataDiv(idDiv, metodoGetPost, data, nombreAccion, controlador) {
+        var retorno = "ok";
+
+        var url = "/" + controlador + "/" + nombreAccion;
+        if (metodoGetPost == "get") {
+            $.get(url, data, function (response, status) {
+                if (status == "success") {
+                    var Arreglo = response.split('|');
+                    if (Arreglo[0].toString() == "error") {
+                        retorno = "error";
+                        $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                            + "<strong> Error,</strong></span> " + Arreglo[1].toString() + "</h4></div>");
+                        $("#MensajeModal").modal({ backdrop: true });
+                    } else {
+                        idDiv = "#" + idDiv;
+                        $(idDiv).html("");
+                        $(idDiv).html(response);
+                    }
+                }
+                else {
+                    retorno = "error";
+                    $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                        + "<strong> Error,</strong></span> No se recibió respuesta del servidor</h4></div>");
+                    $("#MensajeModal").modal({ backdrop: true });
+                }
+            });
+        }
+        if (metodoGetPost == "post") {
+            $.post(url, data, function (response, status) {
+                if (status == "success") {
+                    var Arreglo = response.split('|');
+                    if (Arreglo[0].toString() == "error") {
+                        retorno = "error";
+                        $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                            + "<strong> Error,</strong></span> " + Arreglo[1].toString() + "</h4></div>");
+                        $("#MensajeModal").modal({ backdrop: true });
+
+                    } else {
+                        //Se limpia el div al cual se le va a cargar la data
+                        idDiv = "#" + idDiv;
+                        $(idDiv).html("");
+                        $(idDiv).html(response);
+                    }
+                }
+                else {
+                    retorno = "error";
+                    $("#modal-body").html("<div class='alert alert-danger'><h4><span class='glyphicon glyphicon-remove' style='font-size:20px'></span>"
+                        + "<strong> Error,</strong></span> No se recibió respuesta del servidor</h4></div>");
+                    $("#MensajeModal").modal({ backdrop: true });
+                }
+            });
+        }
+        return retorno;
+    }
+
+    $("#editContacto").click(function () {        
+        
+        var href = "/EdicionContactos/EditarContacto";
+        var createA = document.createElement('a');
+        createA.setAttribute('href', href);
+        createA.click();
+    });
+
+</script>
